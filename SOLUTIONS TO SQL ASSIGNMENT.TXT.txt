@@ -1,0 +1,103 @@
+/*which city has the best customers?*/
+SELECT city as city_name, 
+sum(total) as highest_invoice
+
+from customer c
+
+join invoice i
+
+on c.customerId = i.customerId
+
+order by sum(total) desc 
+
+limit 1
+
+
+
+/*which country has the highest invoice?*/
+select billingcountry,count(invoiceid) as no_invoice
+from Invoice
+group by BillingCountry
+order by no_invoice desc
+
+
+/*This query gives the best customer from the amount spent*/
+ 
+select c.firstname,c.LastName,sum(i.total) amount
+ 
+from customer c,invoice i
+ 
+where c.customerid=i.CustomerId
+ 
+group by (i.customerid)
+ 
+order by amount desc
+ 
+limit 1;
+
+
+/*This query returns the first name,last name and email of listeners who love rock music*/
+SELECT firstname,lastname,Email,g.name as Genre_name
+
+from customer c
+
+inner join invoice i
+
+on c.customerid=i.customerid
+
+inner join invoiceline il
+
+on  i.invoiceid= il.invoiceid
+
+inner join Track t
+
+on il.trackid=t.trackid
+
+inner join Genre g
+
+on t.genreid=g.genreid
+
+where g.name= "Rock"
+
+group by email
+
+
+
+ /*This query returns the list of countries and the popular music genre for in each of the countries*/
+WITH country_purchase as
+
+(SELECT count(*)as total_purchases,BillingCountry,sum(i.total) amount_spent,g.name as genre_name
+
+from InvoiceLine il
+
+join Invoice i
+
+on il.invoiceid=i.invoiceid
+
+JOIN Track t
+
+on il.trackid=t.trackid
+
+JOIN genre g 
+
+on t.genreid=g.genreid
+
+group by BillingCountry,g.genreid)
+
+
+SELECT C.BillingCountry,C.genre_name,C.total_purchases
+
+FROM country_purchase C
+
+WHERE C.total_purchases = (SELECT max(total_purchases)
+
+FROM country_purchase
+
+WHERE C.BillingCountry=BillingCountry
+
+group by BillingCountry)
+
+order by BillingCountry
+ 
+
+
